@@ -1,0 +1,59 @@
+pipeline {
+    agent any
+    parameters {
+      string defaultValue: 'dev', description: 'Mention the branch name to deploy', name: 'Branch_Name'
+    }
+    tools {
+        maven 'mvn'
+        jdk 'jdk-17'
+    } 
+    stages {
+        stage('Git checkout') {
+            steps {
+                script{
+                def branchname = params.Branch_Name
+                checkout scmGit(branches: [[name: branchname]], userRemoteConfigs: [[url: 'https://github.com/varshithakjayappa/simple-java-app.git']])
+                }       
+            }
+        }
+      stage('mvn Build'){
+          steps{
+              sh 'mvn clean package'
+          }
+      }
+    }
+}
+pipeline {
+    agent any
+    parameters {
+      string defaultValue: 'dev', description: 'Mention the branch name to deploy', name: 'Branch_Name'
+    }
+    tools {
+        maven 'mvn'
+        jdk 'jdk-17'
+    } 
+    stages {
+        stage('Git checkout') {
+            steps {
+                script{
+                def branchname = params.Branch_Name
+                checkout scmGit(branches: [[name: branchname]], userRemoteConfigs: [[url: 'https://github.com/varshithakjayappa/simple-java-app.git']])
+                }       
+            }
+        }
+      stage('mvn Build'){
+          steps{
+              sh 'mvn clean package'
+          }
+      }
+      stage('deploy to dev'){
+          when{
+              expression { params.Branch_Name == 'dev' }
+          }
+          steps{
+              deploy adapters: [tomcat9(alternativeDeploymentContext: '', credentialsId: 'tomcat-cred', path: '', url: 'http://localhost:8083/manager/text')], contextPath: null, war: '	target/hello-1.0.war'
+          }
+          }
+      
+    }
+}
