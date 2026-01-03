@@ -4,7 +4,7 @@ repo="crpirf1t243rd4chrqfd"
 img="hello:latest"
 
 sudo apt-get update
-sudo apt-get -y maven docker.io
+sudo apt-get install -y maven docker.io
 sudo systemctl start docker
 cd /tmp/prj
 sudo mvn package -DskipTests
